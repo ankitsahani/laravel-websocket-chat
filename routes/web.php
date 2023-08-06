@@ -32,3 +32,4 @@ Route::get('/dashboard', [UserController::class, 'loadDashboard'])->middleware([
 Route::post('/save-chat', [UserController::class, 'saveChat'])->name('save_chat');
 Route::post('/load-chat', [UserController::class, 'loadChats'])->name('load_chat');
 Route::post('/delete-chat', [UserController::class, 'deleteChat'])->name('delete_chat');
+Route::post('/update-chat', [UserController::class, 'updateChat'])->name('update_chat');

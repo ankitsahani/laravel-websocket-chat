@@ -108,3 +108,30 @@
         </div>
     </div>
 </div>
+<!--Update Modal -->
+<div class="modal fade" id="updateModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Chat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('update_chat') }}" id="update-chat-form" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <input type="hidden" name="id" id="update-chat-id">
+                    <input type="text" name="message" id="update-message"
+                    class="form-control" value="" placeholder="Enter Message">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                    data-dismiss="modal" aria-label="Close">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

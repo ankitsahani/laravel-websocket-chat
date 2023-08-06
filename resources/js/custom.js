@@ -27,11 +27,14 @@ $('#chat-form').submit(function (e) {
                 let chatMeg = `
                 <li class="clearfix" id="${res.data.id}-chat">
                    <div class="message my-message float-right">
-                      ${chat} <i class="fa fa-trash"  style="color:red" data-id="${res.chat.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>
+                      <span>${chat}</span> 
+                      <i class="fa fa-edit" data-id="${res.data.id}" data-msg="${res.data.message}" area-hidden="true" data-target="#updateModal" data-toggle="modal"></i>
+                      <i class="fa fa-trash" style="color:red" data-id="${res.data.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>
                    </div>
                 </li>
                 `;
                 $(".chat-container").append(chatMeg);
+                scrollChat();
             } else {
                 alert(res.msg);
             }
@@ -81,7 +84,9 @@ Echo.private('boradcast-message')
             let chatMeg = `
             <li class="clearfix">
               <div class="message other-message" id="${data.chat.id}-chat">
-                 ${chat} <i class="fa fa-trash"  style="color:red" data-id="${data.chat.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>
+                 <span>${chat}</span>
+                 <i class="fa fa-edit" data-id="${data.chat.id}" data-msg="${data.chat.message}" area-hidden="true" data-target="#updateModal" data-toggle="modal"></i>
+                 <i class="fa fa-trash" style="color:red" data-id="${data.chat.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>
               </div>
             </li>
             `;
@@ -116,7 +121,6 @@ function loadOldChats() {
                 let html = '';
                 for (let i = 0; i < Object.keys(chatss).length; i++) {
 
-
                     let addClass = '';
                     if (chatss[i].sender_id == sendorId) {
                         addClass = "my-message float-right";
@@ -126,9 +130,10 @@ function loadOldChats() {
                     html += `
                     <li class="clearfix">
                         <div class="message ${addClass}" id="${chatss[i].id}-chat">
-                          ${chatss[i].message}`;
+                          <span>${chatss[i].message}</span>`;
                     if (chatss[i].sender_id == sendorId) {
                         html += `
+                        <i class="fa fa-edit"   data-id="${chatss[i].id}" data-msg="${chatss[i].message}" area-hidden="true" data-target="#updateModal" data-toggle="modal"></i>
                         <i class="fa fa-trash"  style="color:red" data-id="${chatss[i].id}" area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>`;
                     }
                     html += `
@@ -148,7 +153,6 @@ function loadOldChats() {
 //scroll chat
 
 function scrollChat() {
-    console.log($(".chat-history").offset().top, $(".chat-history")[0].scrollHeight);
     $(".chat-history").animate({
         scrollTop: $(".chat-history").offset().top + $(".chat-history")[0].scrollHeight
     }, 0);
@@ -181,3 +185,44 @@ $('#delete-chat-form').submit(function (e) {
         }
     })
 });
+
+//update chat 
+$(document).on('click', '.fa-edit', function () {
+    $('#update-chat-id').val($(this).attr('data-id'));
+    $('#update-message').val($(this).attr('data-msg'));
+});
+
+$(document).ready(function () {
+    $('#update-chat-form').submit(function (e) {
+        e.preventDefault();
+        let id = $("#update-chat-id").val();
+        let message = $("#update-message").val();
+        $.ajax({
+            url: $('#update-chat-form').attr('action'),
+            type: $('#update-chat-form').attr('method'),
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf_token"]').attr('content') },
+            data: {
+                id: id,
+                message: message
+            },
+            dataType: 'json',
+            success: function (res) {
+                if (res.success) {
+                    $("#updateModal").modal('hide');
+                    $(`#${id}-chat`).find('span').text(message);
+                    $(`#${id}-chat`).find('.fa-edit').attr('data-msg', message);
+                } else {
+                    alert(res.msg);
+                }
+            }
+        })
+    });
+});
+
+//update websocket
+Echo.private('message-updated')
+    .listen('MessageUpdateEvent', (data) => {
+        console.log(data,'updatechat');
+        $(`#${data.id}-chat`).find('span').text(data.message);
+        // $(`#${data.id}-chat`).find('.fa-edit').attr('data-msg', data.message);
+    });

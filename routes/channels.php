@@ -35,3 +35,6 @@ Broadcast::channel('boradcast-message', function ($user) {
 Broadcast::channel('message-deleted', function ($user) {
     return $user;
 });
+Broadcast::channel('message-updated', function ($user) {
+    return $user;
+});
