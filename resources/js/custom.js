@@ -84,10 +84,12 @@ Echo.private('boradcast-message')
             let chatMeg = `
             <li class="clearfix">
               <div class="message other-message" id="${data.chat.id}-chat">
-                 <span>${chat}</span>
-                 <i class="fa fa-edit" data-id="${data.chat.id}" data-msg="${data.chat.message}" area-hidden="true" data-target="#updateModal" data-toggle="modal"></i>
-                 <i class="fa fa-trash" style="color:red" data-id="${data.chat.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>
-              </div>
+                 <span>${chat}</span>`;
+            if (sendorId == data.chat.sender_id) {
+                chatMeg += `<i class="fa fa-edit" data-id="${data.chat.id}" data-msg="${data.chat.message}" area-hidden="true" data-target="#updateModal" data-toggle="modal"></i>
+                 <i class="fa fa-trash" style="color:red" data-id="${data.chat.id}"  area-hidden="true" data-target="#deleteModal" data-toggle="modal"></i>`;
+            }
+            chatMeg += `</div>
             </li>
             `;
             $(".chat-container").append(chatMeg);
@@ -222,7 +224,6 @@ $(document).ready(function () {
 //update websocket
 Echo.private('message-updated')
     .listen('MessageUpdateEvent', (data) => {
-        console.log(data,'updatechat');
+        console.log(data, 'updatechat');
         $(`#${data.id}-chat`).find('span').text(data.message);
-        // $(`#${data.id}-chat`).find('.fa-edit').attr('data-msg', data.message);
     });
